@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="NPS Bills">
+<title>NPS Roman Group â à¸£à¸°à¸à¸à¸­à¸­à¸à¸à¸´à¸¥</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#c8a951;--gold-lt:#e8cc7a;--gold-dk:#9a7d30;
+  --text:#1a1a1a;--muted:#777;--light:#aaa;
+  --border:#d0c8b8;--border-lt:#ece6da;
+  --bg:#f5f1eb;--card:#fff;--input:#fdfcfa;
+  --danger:#c0392b;--r:10px;--rs:6px;
+  --font:'Sarabun',sans-serif;
+  --shadow:0 2px 12px rgba(0,0,0,.08);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.15);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:88px}
+input,textarea,select,button{font-family:var(--font)}
+button{cursor:pointer;border:none;outline:none;background:none}
+
+/* ââ App Shell ââ */
+.app-header{background:var(--card);border-bottom:2px solid var(--gold);padding:13px 16px 10px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:10px}
+.logo-mark{width:40px;height:40px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,var(--gold-dk),var(--gold));display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:#fff}
+.brand h1{font-size:14px;font-weight:700;line-height:1.25}
+.brand p{font-size:11px;color:var(--light)}
+.tab-nav{display:flex;background:var(--card);border-bottom:1px solid var(--border-lt);position:sticky;top:65px;z-index:99}
+.tab-btn{flex:1;padding:10px 4px;font-size:12px;font-weight:600;color:var(--light);border-bottom:2px solid transparent;transition:all .18s}
+.tab-btn span{display:block;font-size:18px;margin-bottom:1px}
+.tab-btn.active{color:var(--gold-dk);border-bottom-color:var(--gold)}
+.view{display:none;padding:14px}
+.view.active{display:block}
+
+/* ââ Cards ââ */
+.card{background:var(--card);border:1px solid var(--border-lt);border-radius:var(--r);padding:14px;margin-bottom:11px;box-shadow:var(--shadow)}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--border-lt)}
+.card-title{font-size:12px;font-weight:700;color:var(--gold-dk);text-transform:uppercase;letter-spacing:.6px}
+
+/* ââ Invoice Banner ââ */
+.inv-banner{background:linear-gradient(135deg,#fff 55%,#fdf6e3);border:1px solid var(--gold-lt);border-radius:var(--r);padding:13px 14px;margin-bottom:11px;display:flex;align-items:flex-start;gap:11px;box-shadow:var(--shadow)}
+.inv-banner .bl{width:50px;height:50px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,var(--gold-dk),var(--gold));display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:11px;font-weight:700;color:#fff;text-align:center;line-height:1.3}
+.inv-banner .bi h2{font-size:14px;font-weight:700}
+.inv-banner .bi p{font-size:11px;color:var(--muted);margin-top:1px}
+.inv-no-badge{font-family:'Cinzel',serif;font-size:12px;font-weight:600;color:var(--gold-dk);background:#fdf6e3;border:1px solid var(--gold-lt);border-radius:var(--rs);padding:3px 10px;margin-top:6px;display:inline-block}
+
+/* ââ Fields ââ */
+.field{margin-bottom:11px}
+.field label{display:block;font-size:10px;font-weight:700;color:var(--light);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.field input,.field textarea{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:var(--rs);background:var(--input);font-size:14px;color:var(--text);-webkit-appearance:none}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--gold)}
+.field textarea{resize:vertical;min-height:68px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.inv-meta{display:flex;gap:9px}.inv-meta .field{flex:1}
+
+/* ââ Item Cards ââ */
+.item-card{background:var(--card);border:1px solid var(--border-lt);border-radius:var(--r);padding:11px 11px 11px 40px;margin-bottom:8px;position:relative;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.item-num{position:absolute;top:11px;left:11px;width:22px;height:22px;background:var(--gold);border-radius:50%;font-size:11px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center}
+.item-del{position:absolute;top:9px;right:9px;width:26px;height:26px;background:#fff0f0;color:var(--danger);border:1px solid #ffd0cc;border-radius:50%;font-size:15px;display:flex;align-items:center;justify-content:center}
+.item-del:active{background:var(--danger);color:#fff}
+.item-name input{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:14px;background:var(--input);margin-bottom:7px}
+.item-name input:focus{outline:none;border-color:var(--gold)}
+.item-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.mg label{font-size:10px;color:var(--light);display:block;margin-bottom:2px}
+.mg input{width:100%;padding:7px 7px;border:1px solid var(--border);border-radius:var(--rs);font-size:13px;text-align:right;background:var(--input)}
+.mg input:focus{outline:none;border-color:var(--gold)}
+.mg.net{grid-column:span 3;margin-top:5px}
+.mg.net input{background:#fdf6e3;color:var(--gold-dk);font-weight:700;border-color:var(--gold-lt)}
+.add-item-btn{width:100%;padding:13px;background:#fdf6e3;color:var(--gold-dk);border:2px dashed var(--gold-lt);border-radius:var(--r);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:7px}
+.add-item-btn:active{background:var(--gold-lt)}
+
+/* ââ Totals ââ */
+.totals-card{background:var(--card);border:1px solid var(--border-lt);border-radius:var(--r);overflow:hidden;margin-bottom:11px;box-shadow:var(--shadow)}
+.trow{display:flex;justify-content:space-between;align-items:center;padding:10px 15px;border-bottom:1px solid var(--border-lt);font-size:14px}
+.trow:last-child{border-bottom:none}
+.trow.grand{background:linear-gradient(135deg,var(--gold-dk),var(--gold));padding:13px 15px}
+.trow.grand .tl{color:#fff;font-size:14px;font-weight:700}
+.trow.grand .tv{color:#fff;font-size:21px;font-weight:700;font-family:'Cinzel',serif}
+.tl{color:var(--muted);font-weight:500}
+.tv{font-weight:700;font-family:'Cinzel',serif;font-size:16px}
+.tv.red{color:var(--danger)}
+
+/* ââ Signature ââ */
+.sig-canvas{width:100%;height:110px;border:1px solid var(--border);border-radius:var(--rs);background:var(--input);touch-action:none;display:block;cursor:crosshair}
+.sig-row{display:flex;gap:7px;margin-top:7px}
+.sig-btn{flex:1;padding:9px;font-size:12px;font-weight:600;border-radius:var(--rs);border:1px solid var(--border);background:var(--input);color:var(--muted)}
+
+/* ââ Action Buttons ââ */
+.action-bar{display:flex;flex-direction:column;gap:9px;margin-top:4px}
+.btn-p{padding:15px;font-size:15px;font-weight:700;background:linear-gradient(135deg,var(--gold-dk),var(--gold));color:#fff;border-radius:var(--r);box-shadow:0 4px 14px rgba(200,169,81,.35);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-p:active{opacity:.85}
+.btn-s{padding:13px;font-size:14px;font-weight:600;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:var(--r);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-s:active{background:var(--border-lt)}
+.btn-d{padding:13px;font-size:14px;font-weight:600;background:#fff0f0;color:var(--danger);border:1px solid #ffd0cc;border-radius:var(--r);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-d:active{background:var(--danger);color:#fff}
+
+/* ââ History ââ */
+.history-empty{text-align:center;padding:48px 24px;color:var(--light)}
+.history-empty .icon{font-size:44px;margin-bottom:10px}
+.bill-card{background:var(--card);border:1px solid var(--border-lt);border-radius:var(--r);padding:13px 14px;margin-bottom:9px;box-shadow:var(--shadow);display:flex;align-items:center;gap:11px;cursor:pointer}
+.bill-card:active{box-shadow:var(--shadow-lg)}
+.bill-icon{width:40px;height:40px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,var(--gold-dk),var(--gold));display:flex;align-items:center;justify-content:center;font-size:18px}
+.bm{flex:1;min-width:0}
+.bm .bno{font-size:11px;font-weight:700;color:var(--gold-dk)}
+.bm .bcu{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bm .bdt{font-size:11px;color:var(--light)}
+.btl{text-align:right;flex-shrink:0}
+.btl .bam{font-size:16px;font-weight:700;color:var(--gold-dk);font-family:'Cinzel',serif}
+.btl .bct{font-size:11px;color:var(--light)}
+.search-wrap{position:relative;margin-bottom:11px}
+.search-wrap input{width:100%;padding:10px 12px 10px 36px;border:1px solid var(--border);border-radius:var(--r);font-size:14px;background:var(--card)}
+.search-wrap input:focus{outline:none;border-color:var(--gold)}
+.search-wrap .si{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--light);pointer-events:none}
+
+/* ââ Products ââ */
+.prod-item{background:var(--card);border:1px solid var(--border-lt);border-radius:var(--r);padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)}
+.pi-icon{width:34px;height:34px;border-radius:var(--rs);flex-shrink:0;background:#fdf6e3;border:1px solid var(--gold-lt);display:flex;align-items:center;justify-content:center;font-size:17px}
+.pi-info{flex:1;min-width:0}
+.pi-name{font-size:14px;font-weight:600}
+.pi-price{font-size:12px;color:var(--gold-dk);font-weight:700}
+.pi-del{color:var(--danger);font-size:18px;padding:4px}
+
+/* ââ Modal ââ */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center}
+.modal-backdrop.open{display:flex}
+.modal{background:var(--card);border-radius:20px 20px 0 0;padding:18px 15px 32px;width:100%;max-width:500px;box-shadow:var(--shadow-lg);animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(50px);opacity:0}}
+.modal-handle{width:38px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 14px}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:14px}
+.mb-row{display:flex;gap:6px;margin-top:14px}
+.mb{flex:1;padding:10px 4px;font-size:12px;font-weight:600;border-radius:var(--rs);border:1px solid var(--border);background:var(--input);color:var(--muted);text-align:center}
+.mb.red{border-color:#ffd0cc;background:#fff0f0;color:var(--danger)}
+.mb:active{opacity:.7}
+
+/* ââ Toast ââ */
+.toast{position:fixed;bottom:94px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:11px 20px;border-radius:24px;font-size:13px;font-weight:600;box-shadow:var(--shadow-lg);z-index:300;opacity:0;pointer-events:none;white-space:nowrap;transition:opacity .2s}
+.toast.show{opacity:1}
+.ic-badge{font-size:11px;color:var(--light)}
+
+/* ââââââââââââââââââââââââââââââââââââââââââââââââ
+   PRINT STYLES
+   à¹à¸à¹à¹à¸à¹à¸¥à¹à¸§: table-layout:fixed + colgroup
+   à¸à¸³à¹à¸«à¹à¹à¸à¹à¸¥à¸°à¸à¸­à¸¥à¸±à¸¡à¸à¹à¸à¸§à¹à¸²à¸à¸à¸¹à¸à¸à¹à¸­à¸ à¹à¸¡à¹à¸à¸±à¸à¹à¸à¹à¸à¹à¸à¸§
+ââââââââââââââââââââââââââââââââââââââââââââââââ */
+@media print {
+  @page { size: A4; margin: 12mm 14mm; }
+
+  body > *:not(#print-wrap) { display: none !important; }
+  #print-wrap { display: block !important; }
+  body { background:#fff; padding:0; font-family:'Sarabun',sans-serif; font-size:11pt; color:#000; }
+
+  /* Header */
+  .ph { display:flex; align-items:flex-start; gap:14pt; margin-bottom:10pt; }
+  .ph-logo { flex-shrink:0; text-align:center; width:68pt; border:1.5pt solid #c8a951; border-radius:4pt; padding:5pt 3pt; }
+  .ph-logo .nps { font-family:'Cinzel',serif; font-size:20pt; font-weight:700; color:#9a7d30; line-height:1; }
+  .ph-logo .pillars { font-size:9pt; color:#c8a951; letter-spacing:4pt; margin:2pt 0; }
+  .ph-logo .roman { font-size:6.5pt; color:#9a7d30; font-weight:700; letter-spacing:1pt; }
+  .ph-logo .grp { font-size:6pt; color:#aaa; letter-spacing:.3pt; }
+  .ph-info .sn { font-size:20pt; font-weight:800; line-height:1.2; margin-bottom:4pt; }
+  .ph-info .sa { font-size:10pt; color:#444; line-height:1.7; }
+
+  /* Title */
+  .pt {
+    position:relative; text-align:center;
+    font-size:15pt; font-weight:700;
+    border-top:2pt solid #1a1a1a; border-bottom:1pt solid #1a1a1a;
+    padding:5pt 0; margin-bottom:11pt;
+  }
+  .pt .ptd { position:absolute; right:0; top:50%; transform:translateY(-50%); font-size:10.5pt; font-weight:400; }
+
+  /* Parties */
+  .pp { display:grid; grid-template-columns:1fr 1fr; border:1pt solid #888; margin-bottom:11pt; }
+  .pp-side { padding:8pt 11pt; font-size:10pt; line-height:1.85; }
+  .pp-side:first-child { border-right:1pt solid #888; }
+  .ppl { color:#444; }
+  .ppv { font-weight:600; }
+
+  /* ââ ITEMS TABLE (fixed) ââ */
+  table.pitems {
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;   /* â à¸ªà¸³à¸à¸±à¸à¸¡à¸²à¸: à¸¥à¹à¸­à¸à¸à¸§à¸²à¸¡à¸à¸§à¹à¸²à¸ col */
+    font-size:10.5pt;
+    margin-bottom:0;
+  }
+  /* à¸à¸­à¸¥à¸±à¸¡à¸à¹à¸à¸³à¸«à¸à¸à¸à¹à¸²à¸ colgroup */
+  table.pitems col.c1 { width:6%; }
+  table.pitems col.c2 { width:37%; }
+  table.pitems col.c3 { width:9%; }
+  table.pitems col.c4 { width:16%; }
+  table.pitems col.c5 { width:14%; }
+  table.pitems col.c6 { width:18%; }
+
+  table.pitems th {
+    background:#f0ebe0; padding:7pt 6pt;
+    font-weight:700; font-size:10.5pt;
+    border:1pt solid #999; text-align:center;
+    overflow:hidden; white-space:nowrap;
+  }
+  table.pitems td {
+    padding:7pt 6pt;
+    border:1pt solid #ccc;
+    overflow:hidden;
+    vertical-align:middle;
+    white-space:nowrap;
+  }
+  table.pitems td.tc { text-align:center; }
+  table.pitems td.tr { text-align:right; }
+  table.pitems td.tl { text-align:left; }
+  /* à¸à¸·à¹à¸­à¸ªà¸´à¸à¸à¹à¸² à¸­à¸²à¸à¸¢à¸²à¸§ à¹à¸«à¹ wrap à¹à¸à¹ */
+  table.pitems td.name { white-space:normal; }
+  /* à¹à¸à¸§à¸§à¹à¸²à¸ */
+  table.pitems tr.erow td { height:19pt; }
+
+  /* ââ Totals ââ */
+  .ptot-wrap { display:flex; justify-content:flex-end; margin-top:0; }
+  table.ptotals {
+    width:195pt; border-collapse:collapse; font-size:10.5pt;
+    table-layout:fixed;
+  }
+  table.ptotals col.lc { width:65%; }
+  table.ptotals col.rc { width:35%; }
+  table.ptotals td { padding:7pt 9pt; border:1pt solid #ccc; }
+  table.ptotals td:last-child { text-align:right; font-weight:600; }
+  table.ptotals tr.grand td { font-size:11.5pt; font-weight:700; border-top:2pt solid #888; }
+
+  /* ââ Footer ââ */
+  .pfoot { display:flex; align-items:flex-start; justify-content:space-between; margin-top:18pt; gap:14pt; }
+  .pnotes { flex:1; font-size:9.5pt; color:#333; line-height:1.75; }
+  .pnotes b { font-size:10pt; font-weight:700; }
+  /* ââ Signatures (à¹à¸à¹à¹à¸: à¹à¸«à¹à¹à¸ªà¸à¸à¹à¸à¹à¸à¸à¸¥à¹à¸­à¸ â à¹à¸«à¸¡à¸·à¸­à¸à¸à¸´à¸¥à¸à¹à¸à¸à¸à¸±à¸) ââ */
+  .psigs { display:flex; gap:24pt; flex-shrink:0; }
+  .psig { text-align:center; min-width:85pt; }
+  .psig-title { font-size:10.5pt; font-weight:700; margin-bottom:2pt; }
+  .psig-body {
+    border:1pt solid #bbb; border-radius:3pt;
+    height:62pt; width:100pt;
+    display:flex; align-items:center; justify-content:center;
+    margin:0 auto 5pt;
+  }
+  .psig-body img { max-height:58pt; max-width:96pt; }
+  .psig-line { font-size:9pt; color:#666; border-top:1pt solid #888; padding-top:4pt; width:100pt; margin:0 auto; }
+}
+
+/* hide print-wrap on screen */
+#print-wrap { display:none; }
+</style>
+</head>
+<body>
+
+<!-- App Header -->
+<header class="app-header">
+  <div class="logo-mark">NPS</div>
+  <div class="brand">
+    <h1>à¸£à¹à¸²à¸à¸«à¸à¸­à¸à¸ à¸±à¸¢à¸¨à¸¹à¸à¸¢à¹à¹à¸ªà¸²à¹à¸£à¸¡à¸±à¸</h1>
+    <p>NPS Roman Group Â· à¸£à¸°à¸à¸à¸­à¸­à¸à¸à¸´à¸¥</p>
+  </div>
+</header>
+
+<!-- Tab Nav -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('bill')" id="tab-bill"><span>ð</span>à¸­à¸­à¸à¸à¸´à¸¥</button>
+  <button class="tab-btn" onclick="switchTab('history')" id="tab-history"><span>ð</span>à¸à¸£à¸°à¸§à¸±à¸à¸´</button>
+  <button class="tab-btn" onclick="switchTab('products')" id="tab-products"><span>ð¦</span>à¸ªà¸´à¸à¸à¹à¸²</button>
+</nav>
+
+<!-- VIEW: BILL -->
+<div class="view active" id="view-bill">
+  <div class="inv-banner">
+    <div class="bl">NPS<br><span style="font-size:9px">Roman</span></div>
+    <div class="bi">
+      <h2>à¸£à¹à¸²à¸à¸«à¸à¸­à¸à¸ à¸±à¸¢à¸¨à¸¹à¸à¸¢à¹à¹à¸ªà¸²à¹à¸£à¸¡à¸±à¸</h2>
+      <p>75/2 à¸«à¸¡à¸¹à¹.9 à¸.à¹à¸à¸à¸ªà¸°à¸­à¸²à¸ à¸­.à¹à¸¡à¸·à¸­à¸ à¸.à¸­à¸¸à¸à¸£à¸à¸²à¸à¸µ 41000</p>
+      <p>à¹à¸à¸£ 064-8644024</p>
+      <div class="inv-no-badge" id="display-invno">INV-...</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">ð à¸à¹à¸­à¸¡à¸¹à¸¥à¸à¸´à¸¥</span>
+      <button style="font-size:12px;font-weight:600;color:var(--gold-dk);padding:5px 11px;border:1px solid var(--gold-lt);border-radius:var(--rs);background:#fdf6e3" onclick="newBill()">+ à¸à¸´à¸¥à¹à¸«à¸¡à¹</button>
+    </div>
+    <div class="inv-meta">
+      <div class="field"><label>à¹à¸¥à¸à¸à¸µà¹à¸à¸´à¸¥</label><input type="text" id="inv-no" readonly style="background:#fdf6e3;color:var(--gold-dk);font-weight:700"></div>
+      <div class="field"><label>à¸§à¸±à¸à¸à¸µà¹</label><input type="date" id="inv-date"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">ð¤ à¸à¹à¸­à¸¡à¸¹à¸¥à¸¥à¸¹à¸à¸à¹à¸²</span></div>
+    <div class="field"><label>à¸à¸·à¹à¸­à¸¥à¸¹à¸à¸à¹à¸²</label><input type="text" id="cname" placeholder="à¸à¸·à¹à¸­-à¸à¸²à¸¡à¸ªà¸à¸¸à¸¥ / à¸à¸£à¸´à¸©à¸±à¸"></div>
+    <div class="field"><label>à¸à¸µà¹à¸­à¸¢à¸¹à¹</label><textarea id="caddr" placeholder="à¸à¸µà¹à¸­à¸¢à¸¹à¹à¸ªà¸³à¸«à¸£à¸±à¸à¸­à¸­à¸à¹à¸à¹à¸ªà¸£à¹à¸" rows="2"></textarea></div>
+    <div class="field"><label>à¹à¸à¸­à¸£à¹à¹à¸à¸£</label><input type="tel" id="cphone" placeholder="0xx-xxx-xxxx"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">ð à¸£à¸²à¸¢à¸à¸²à¸£à¸ªà¸´à¸à¸à¹à¸²</span>
+      <span class="ic-badge" id="items-badge">0 à¸£à¸²à¸¢à¸à¸²à¸£</span>
+    </div>
+    <div id="items-container"></div>
+    <button class="add-item-btn" onclick="addItem()"><span style="font-size:20px">ï¼</span> à¹à¸à¸´à¹à¸¡à¸£à¸²à¸¢à¸à¸²à¸£à¸ªà¸´à¸à¸à¹à¸²</button>
+  </div>
+
+  <div class="totals-card">
+    <div class="trow"><span class="tl">à¸£à¸§à¸¡à¹à¸à¸´à¸</span><span class="tv" id="t-sub">0</span></div>
+    <div class="trow"><span class="tl">à¸ªà¹à¸§à¸à¸¥à¸à¸£à¸§à¸¡</span><span class="tv red" id="t-disc">0</span></div>
+    <div class="trow grand"><span class="tl">à¸à¸³à¸à¸§à¸à¹à¸à¸´à¸à¸à¸±à¹à¸à¸«à¸¡à¸</span><span class="tv" id="t-grand">0</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">ð à¸«à¸¡à¸²à¸¢à¹à¸«à¸à¸¸</span></div>
+    <div class="field"><textarea id="notes" rows="3">-à¸£à¸²à¸à¸²à¸à¸±à¸à¸à¸¥à¹à¸²à¸§à¹à¸¡à¹à¸£à¸§à¸¡à¸à¹à¸²à¸à¸´à¸à¸à¸±à¹à¸à¸à¸¸à¸à¸£à¸²à¸¢à¸à¸²à¸£
+-à¸£à¸²à¸à¸²à¸à¸±à¸à¸à¸¥à¹à¸²à¸§à¸£à¸§à¸¡à¸à¹à¸²à¸ªà¹à¸à¹à¸£à¸µà¸¢à¸à¸£à¹à¸­à¸¢à¹à¸¥à¹à¸§
+-à¸à¸³à¸£à¸°à¸à¹à¸²à¸ªà¸´à¸à¸à¹à¸²à¸à¸±à¹à¸à¸«à¸¡à¸à¸«à¸£à¸·à¸­à¸¡à¸±à¸à¸à¸³70%à¹à¸à¸·à¹à¸­à¸¥à¸à¸à¸´à¸§à¸à¸¥à¸´à¸</textarea></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">âï¸ à¸¥à¸²à¸¢à¹à¸à¹à¸à¸à¸¹à¹à¸à¸²à¸¢</span></div>
+    <span style="font-size:11px;color:var(--light);display:block;margin-bottom:6px">à¸§à¸²à¸à¸¥à¸²à¸¢à¹à¸à¹à¸à¸à¹à¸§à¸¢à¸à¸´à¹à¸§à¹à¸à¸à¹à¸­à¸à¸à¹à¸²à¸à¸¥à¹à¸²à¸</span>
+    <canvas class="sig-canvas" id="sig-canvas" width="600" height="110"></canvas>
+    <div class="sig-row">
+      <button class="sig-btn" onclick="clearSig()">ð à¸¥à¹à¸²à¸à¸¥à¸²à¸¢à¹à¸à¹à¸</button>
+      <button class="sig-btn" onclick="downloadSig()">ð¾ à¸à¸±à¸à¸à¸¶à¸à¸ à¸²à¸</button>
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn-p" onclick="printBill()">ð¨ à¸­à¸­à¸à¹à¸à¹à¸ªà¸£à¹à¸ / à¸à¸´à¸¡à¸à¹ PDF</button>
+    <button class="btn-s" onclick="saveBill()">ð¾ à¸à¸±à¸à¸à¸¶à¸à¸à¸´à¸¥à¸à¸µà¹</button>
+    <button class="btn-d" onclick="if(confirm('à¸¥à¹à¸²à¸à¸à¹à¸­à¸¡à¸¹à¸¥à¸à¸´à¸¥?'))newBill()">ð à¸¥à¹à¸²à¸à¸à¸´à¸¥</button>
+  </div>
+</div>
+
+<!-- VIEW: HISTORY -->
+<div class="view" id="view-history">
+  <div class="search-wrap">
+    <span class="si">ð</span>
+    <input type="text" id="hsearch" placeholder="à¸à¹à¸à¸«à¸²à¸à¸·à¹à¸­à¸¥à¸¹à¸à¸à¹à¸² à¸«à¸£à¸·à¸­à¹à¸¥à¸à¸à¸´à¸¥..." oninput="renderHistory()">
+  </div>
+  <div id="history-list"></div>
+</div>
+
+<!-- VIEW: PRODUCTS -->
+<div class="view" id="view-products">
+  <div class="card">
+    <div class="card-header"><span class="card-title">â à¹à¸à¸´à¹à¸¡à¸ªà¸´à¸à¸à¹à¸²à¹à¸«à¸¡à¹</span></div>
+    <div class="field"><label>à¸à¸·à¹à¸­à¸ªà¸´à¸à¸à¹à¸²</label><input type="text" id="np-name" placeholder="à¸à¸·à¹à¸­à¸ªà¸´à¸à¸à¹à¸² / à¸à¸£à¸´à¸à¸²à¸£"></div>
+    <div class="field-row">
+      <div class="field"><label>à¸£à¸²à¸à¸²/à¸«à¸à¹à¸§à¸¢</label><input type="number" id="np-price" placeholder="0"></div>
+      <div class="field"><label>à¸«à¸à¹à¸§à¸¢</label><input type="text" id="np-unit" placeholder="à¸à¸¸à¸ / à¸à¹à¸ / à¸à¸´à¹à¸"></div>
+    </div>
+    <button class="btn-p" style="margin-top:8px" onclick="addProduct()">ï¼ à¸à¸±à¸à¸à¸¶à¸à¸ªà¸´à¸à¸à¹à¸²</button>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px">
+    <span style="font-size:13px;font-weight:700;color:var(--muted)">à¸£à¸²à¸¢à¸à¸²à¸£à¸ªà¸´à¸à¸à¹à¸²</span>
+    <span id="prod-count" style="font-size:12px;color:var(--light)"></span>
+  </div>
+  <div id="products-list"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" id="bill-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-title"></div>
+    <div id="modal-content"></div>
+    <div class="mb-row" id="modal-actions"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- PRINT AREA -->
+<div id="print-wrap"></div>
+
+<script>
+/* âââ Storage âââ */
+const SK='nps_bills',PK='nps_products',SQ='nps_seq';
+let bills=JSON.parse(localStorage.getItem(SK)||'[]');
+let products=JSON.parse(localStorage.getItem(PK)||'[]');
+let seq=parseInt(localStorage.getItem(SQ)||'1');
+let items=[],editId=null;
+
+if(!products.length){
+  products=[
+    {id:uid(),name:'à¸à¹à¸³à¸à¸¸ à¸à¸¸à¸à¹à¸«à¸à¹',price:12990,unit:'à¸à¸¸à¸'},
+    {id:uid(),name:'à¸à¸±à¹à¸¡à¸à¹à¸³+à¸à¸´à¸à¸à¸±à¹à¸',price:2000,unit:'à¸à¸¸à¸'},
+    {id:uid(),name:'à¸à¸¸à¹à¸à¸à¸²à¸à¸²à¸à¸à¹à¸²+à¹à¸ªà¸²à¸à¸¸à¸«à¸¥à¸²à¸',price:1880,unit:'à¸à¸´à¹à¸'},
+    {id:uid(),name:'à¹à¸ªà¸²à¹à¸£à¸¡à¸±à¸',price:3500,unit:'à¸à¹à¸'},
+    {id:uid(),name:'à¸à¸£à¸°à¸à¸²à¸à¸à¸­à¸à¹à¸¡à¹',price:850,unit:'à¹à¸'},
+  ];saveProds();
+}
+
+function uid(){return Math.random().toString(36).slice(2,9)}
+function saveBills(){localStorage.setItem(SK,JSON.stringify(bills))}
+function saveProds(){localStorage.setItem(PK,JSON.stringify(products))}
+function saveSeq(){localStorage.setItem(SQ,String(seq))}
+function genInvNo(){const d=new Date();return`INV-${d.getFullYear()}${p2(d.getMonth()+1)}${p2(d.getDate())}-${String(seq).padStart(4,'0')}`}
+function p2(n){return String(n).padStart(2,'0')}
+function today(){const d=new Date();return`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`}
+function fmtDate(iso){if(!iso)return'';const[y,m,d]=iso.split('-');return`${d}/${m}/${y}`}
+function fmtThai(iso){
+  if(!iso)return'';
+  const mn=['à¸¡à¸à¸£à¸²à¸à¸¡','à¸à¸¸à¸¡à¸ à¸²à¸à¸±à¸à¸à¹','à¸¡à¸µà¸à¸²à¸à¸¡','à¹à¸¡à¸©à¸²à¸¢à¸','à¸à¸¤à¸©à¸ à¸²à¸à¸¡','à¸¡à¸´à¸à¸¸à¸à¸²à¸¢à¸','à¸à¸£à¸à¸à¸²à¸à¸¡','à¸ªà¸´à¸à¸«à¸²à¸à¸¡','à¸à¸±à¸à¸¢à¸²à¸¢à¸','à¸à¸¸à¸¥à¸²à¸à¸¡','à¸à¸¤à¸¨à¸à¸´à¸à¸²à¸¢à¸','à¸à¸±à¸à¸§à¸²à¸à¸¡'];
+  const[y,m,d]=iso.split('-');return`${parseInt(d)} ${mn[parseInt(m)-1]} ${parseInt(y)+543}`;
+}
+function num(n){return Number(n||0).toLocaleString('th-TH',{minimumFractionDigits:0,maximumFractionDigits:2})}
+function iNet(it){return Math.max(0,(it.qty*it.price)-it.discount)}
+
+/* âââ Init âââ */
+function init(){newBill();initSig();renderProds();renderHistory()}
+function newBill(){
+  editId=null;items=[];
+  const no=genInuNo();
+  document.getElementById('inv-no').value=no;
+  document.getElementById('display-invno').textContent=no;
+  document.getElementById('inv-date').value=today();
+  ['cname','caddr','cphone'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('notes').value=`-à¸£à¸²à¸à¸²à¸à¸±à¸à¸à¸¥à¹à¸²à¸§à¹à¸¡à¹à¸£à¸§à¸¡à¸à¹à¸²à¸à¸´à¸à¸à¸±à¹à¸à¸à¸¸à¸à¸£à¸²à¸¢à¸à¸²à¸£
+-à¸£à¸²à¸à¸²à¸à¸±à¸à¸à¸¥à¹à¸²à¸§à¸£à¸§à¸¡à¸à¹à¸²à¸ªà¹à¸à¹à¸£à¸µà¸¢à¸à¸£à¹à¸­à¸¢à¹à¸¥à¹à¸§
+-à¸à¸³à¸£à¸°à¸à¹à¸²à¸ªà¸´à¸à¸à¹à¸²à¸à¸±à¹à¸à¸«à¸¡à¸à¸«à¸£à¸·à¸­à¸¡à¸±à¸à¸à¸³70%à¹à¸à¸·à¹à¸­à¸¥à¸à¸à¸´à¸§à¸à¸¥à¸´à¸`;
+  clearSig();addItem();renderTotals();
+}
+
+/* âââ Items âââ */
+function addItem(name='',qty=1,price=0,discount=0){
+  const id=uid();
+  items.push({id,name,qty:+qty,price:+price,discount:+discount});
+  renderItems();
+  setTimeout(()=>document.getElementById(`in-${id}`)?.focus(),80);
+}
+function removeItem(id){items=items.filter(i=>i.id!==id);renderItems();renderTotals()}
+function syncItem(id){
+  const it=items.find(i=>i.id===id);if(!it)return;
+  it.name=document.getElementById(`in-${id}`)?.value||'';
+  it.qty=parseFloat(document.getElementById(`iq-${id}`)?.value)||0;
+  it.price=parseFloat(document.getElementById(`ip-${id}`)?.value)||0;
+  it.discount=parseFloat(document.getElementById(`id-${id}`)?.value)||0;
+  const ne=document.getElementById(`inet-${id}`);
+  if(ne)ne.value=num(iNet(it));
+  renderTotals();
+}
+function onName(id){
+  syncItem(id);
+  const v=(document.getElementById(`in-${id}`)?.value||'').toLowerCase();
+  const pr=products.find(p=>p.name.toLowerCase()===v);
+  if(pr){const it=items.find(i=>i.id===id);if(it){it.price=pr.price;const el=document.getElementById(`ip-${id}`);if(el){el.value=pr.price;syncItem(id);}}}
+}
+function renderItems(){
+  const c=document.getElementById('items-container');
+  document.getElementById('items-badge').textContent=`${items.length} à¸£à¸²à¸¢à¸à¸²à¸£`;
+  if(!items.length){c.innerHTML=`<p style="text-align:center;color:var(--light);padding:14px 0;font-size:13px">à¸¢à¸±à¸à¹à¸¡à¹à¸¡à¸µà¸£à¸²à¸¢à¸à¸²à¸£à¸ªà¸´à¸à¸à¹à¸²</p>`;return}
+  const dl=`<datalist id="pdl">${products.map(p=>`<option value="${p.name}">`).join('')}</datalist>`;
+  c.innerHTML=dl+items.map((it,i)=>`
+    <div class="item-card">
+      <div class="item-num">${i+1}</div>
+      <button class="item-del" onclick="removeItem('${it.id}')">Ã</button>
+      <div class="item-name"><input type="text" id="in-${it.id}" list="pdl" value="${it.name}" placeholder="à¸à¸·à¹à¸­à¸ªà¸´à¸à¸à¹à¸² / à¸à¸£à¸´à¸à¸²à¸£" oninput="onName('${it.id}')" onchange="onName('${it.id}')"></div>
+      <div class="item-grid">
+        <div class="mg"><label>à¸à¸³à¸à¸§à¸</label><input type="number" id="iq-${it.id}" value="${it.qty}" min="0" oninput="syncItem('${it.id}')"></div>
+        <div class="mg"><label>à¸£à¸²à¸à¸²/à¸«à¸à¹à¸§à¸¢</label><input type="number" id="ip-${it.id}" value="${it.price}" min="0" oninput="syncItem('${it.id}')"></div>
+        <div class="mg"><label>à¸ªà¹à¸§à¸à¸¥à¸</label><input type="number" id="id-${it.id}" value="${it.discount}" min="0" oninput="syncItem('${it.id}')"></div>
+        <div class="mg net"><label>à¸£à¸²à¸à¸²à¸ªà¸¸à¸à¸à¸´</label><input type="text" id="inet-${it.id}" value="${num(iNet(it))}" readonly></div>
+      </div>
+    </div>`).join('');
+}
+function renderTotals(){
+  let sub=0,disc=0;items.forEach(it=>{sub+=it.qty*it.price;disc+=it.discount});
+  document.getElementById('t-sub').textContent=num(sub);
+  document.getElementById('t-disc').textContent=num(disc);
+  document.getElementById('t-grand').textContent=num(Math.max(0,sub-disc));
+}
+
+/* âââ Collect âââ */
+function collectBill(){
+  items.forEach(it=>{
+    it.name=document.getElementById(`in-${it.id}`)?.value||it.name;
+    it.qty=parseFloat(document.getElementById(`iq-${it.id}`)?.value)||it.qty;
+    it.price=parseFloat(document.getElementById(`ip-${it.id}`)?.value)||it.price;
+    it.discount=parseFloat(document.getElementById(`id-${it.id}`)?.value)||it.discount;
+  });
+  let sub=0,disc=0;items.forEach(it=>{sub+=it.qty*it.price;disc+=it.discount});
+  return{id:editId||uid(),invNo:document.getElementById('inv-no').value,date:document.getElementById('inv-date').value,
+    customer:document.getElementById('cname').value,address:document.getElementById('caddr').value,
+    phone:document.getElementById('cphone').value,notes:document.getElementById('notes').value,
+    items:JSON.parse(JSON.stringify(items)),subtotal:sub,discount:disc,grand:Math.max(0,sub-disc),
+    sig:getSigURL(),savedAt:new Date().toISOString()};
+}
+
+/* âââ Save âââ */
+function saveBill(){
+  const bill=collectBill();
+  if(!bill.customer&&!bill.items.length){showToast('â ï¸ à¸à¸£à¸¸à¸à¸²à¹à¸à¸´à¹à¸¡à¸à¹à¸­à¸¡à¸¹à¸¥à¸à¹à¸­à¸à¸à¸±à¸à¸à¸¶à¸');return}
+  if(editId){const i=bills.findIndex(b=>b.id===editId);if(i>=0)bills[i]=bill;}
+  else{bills.unshift(bill);seq++;saveSeq();}
+  saveBills();editId=bill.id;showToast('â à¸à¸±à¸à¸à¸¶à¸à¸à¸´à¸¥à¸ªà¸³à¹à¸£à¹à¸');
+}
+
+function printBill(){const bill=collectBill();buildPrint(bill);setTimeout(()=>window.print(),200)}
+
+function buildPrint(bill){
+  const wrap=document.getElementById('print-wrap');
+  const MIN=8;
+  let rows='';
+  bill.items.forEach((it,i)=>{
+    rows+=`<tr>
+      <td class="tc">${i+1}</td>
+      <td class="name tl">${escHtml(it.name)}</td>
+      <td class="tc">${it.qty}</td>
+      <td class="tr">${num(it.price)}</td>
+      <td class="tr">${num(it.discount)}</td>
+      <td class="tr">${num(iNet(it))}</td>
+    </tr>`;
+  });
+  const empty=Math.max(0,MIN-bill.items.length);
+  for(let i=0;i<empty;i++) rows+=`<tr class="erow"><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+  const noteHtml=(bill.notes||'').split('\n').map(l=>`<div>${escHtml(l)}</div>`).join('');
+  const sigContent=bill.sig?`<img src="${bill.sig}">`:'';
+  const dateStr=fmtThai(bill.date);
+  wrap.innerHTML=`
+  <div class="ph">
+    <div class="ph-logo">
+      <div class="nps">NPS</div>
+      <div class="pillars">| | |</div>
+      <div class="roman">Roman</div>
+      <div class="grp">Group</div>
+    </div>
+    <div class="ph-info">
+      <div class="sn">à¸£à¹à¸²à¸à¸«à¸à¸­à¸à¸¨à¸±à¸¢à¸ªà¸¹à¸à¸¢à¹à¹à¸ªà¸²à¹à¸£à¸¡à¸±à¸</div>
+      <div class="sa">75/2 à¸«à¸¡à¸¹à¹.9 à¸.à¹à¸à¸à¸ªà¸°à¸­à¸²à¸ à¸­.à¹à¸¡à¸·à¸­à¸ à¸.à¸­à¸¸à¸à¸£à¸à¸²à¸à¸µ 41000<br>à¹à¸à¸£ 0648644024</div>
+    </div>
+  </div>
+  <div class="pt">
+    à¹à¸à¹à¸ªà¸£à¹à¸à¸£à¸±à¸à¹à¸à¸´à¸/à¸ªà¸±à¹à¸à¸ªà¸´à¸à¸à¹à¸²
+    <span class="ptd">à¸§à¸±à¸à¸à¸µà¹ &nbsp;${dateStr}</span>
+  </div>
+  <div class="pp">
+    <div class="pp-side">
+      <span class="ppl">à¸à¸·à¹à¸­à¸à¸¹à¹à¸à¸²à¸¢ &nbsp;&nbsp;</span><span class="ppv">à¸£à¹à¸²à¸à¸«à¸à¸­à¸à¸ à¸±à¸¢à¸¨à¸¹à¸à¸¢à¹à¹à¸ªà¸²à¹à¸£à¸¡à¸±à¸</span><br><br>
+      <span class="ppl">à¸à¸µà¹à¸­à¸¢à¸¹à¹ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="ppv">75/2 à¸«à¸¡à¸¹à¹.9 à¸.à¹à¸à¸à¸ªà¸°à¸­à¸²à¸ à¸­.à¹à¸¡à¸·à¸­à¸ à¸.à¸­à¸¸à¸à¸£à¸à¸²à¸à¸µ 41000</span><br>
+      <span style="display:inline-block;width:56pt"></span><span class="ppv">à¹à¸à¸£ 0648644024</span>
+    </div>
+    <div class="pp-side">
+      <span class="ppl">à¸à¸·à¹à¸­à¸à¸¹à¹à¸à¸·à¹à¸­ &nbsp;&nbsp;</span><span class="ppv">${escHtml(bill.customer||'')}</span><br><br>
+      <span class="ppl">à¸à¸µà¹à¸­à¸¢à¸¹à¹ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="ppv">${escHtml(bill.address||'').replace(/\n/g,'<br>')}</span>
+    </div>
+  </div>
+  <table class="pitems">
+    <colgroup>
+      <col class="c1"><col class="c2"><col class="c3">
+      <col class="c4"><col class="c5"><col class="c6">
+    </colgroup>
+    <thead><tr><th></th><th>à¸£à¸²à¸¢à¸à¸²à¸£à¸ªà¸´à¸à¸à¹à¸²</th><th>à¸à¸³à¸à¸§à¸</th><th>à¸£à¸²à¸à¸²/à¸«à¸à¹à¸§à¸¢</th><th>à¸ªà¹à¸§à¸à¸¥à¸</th><th>à¸£à¸²à¸à¸²à¸ªà¸¸à¸à¸à¸´</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <div class="ptot-wrap">
+    <table class="ptotals">
+      <colgroup><col class="lc"><col class="rc"></colgroup>
+      <tr><td>à¸£à¸§à¸¡à¹à¸à¸´à¸</td><td>${num(bill.subtotal)}</td></tr>
+      <tr><td>à¸ªà¹à¸§à¸à¸¥à¸à¸ªà¸´à¸à¸à¹à¸²</td><td>${num(bill.discount)}</td></tr>
+      <tr class="grand"><td>à¸à¸³à¸à¸§à¸à¹à¸à¸´à¸à¸à¸±à¹à¸à¸«à¸¡à¸</td><td>${num(bill.grand)}</td></tr>
+    </table>
+  </div>
+  <div class="pfoot">
+    <div class="pnotes"><b>à¸«à¸¡à¸²à¸¢à¹à¸«à¸à¸¸</b><br>${noteHtml}</div>
+    <div class="psigs">
+      <div class="psig"><div class="psig-title">à¸à¸¹à¹à¸à¸²à¸¢</div><div class="psig-body">${sigContent}</div><div class="psig-line">à¸¥à¸²à¸¢à¹à¸à¹à¸ / Signature</div></div>
+      <div class="psig"><div class="psig-title">à¸à¸¹à¹à¸ªà¸±à¹à¸à¸à¸·à¹à¸­</div><div class="psig-body"></div><div class="psig-line">à¸¥à¸²à¸¢à¹à¸à¹à¸ / Signature</div></div>
+    </div>
+  </div>`;
+}
+
+function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function renderHistory(){
+  const list=document.getElementById('history-list');
+  const q=(document.getElementById('hsearch')?.value||'').toLowerCase();
+  const f=bills.filter(b=>!q||(b.customer||'').toLowerCase().includes(q)||(b.invNo||'').toLowerCase().includes(q));
+  if(!f.length){list.innerHTML=`<div class="history-empty"><div class="icon">ð</div><p>à¸¢à¸±à¸à¹à¸¡à¹à¸¡à¸µà¸à¸´à¸¥à¸à¸µà¹à¸à¸±à¸à¸à¸¶à¸</p></div>`;return}
+  list.innerHTML=f.map(b=>`
+    <div class="bill-card" onclick="openModal('${b.id}')">
+      <div class="bill-icon">ð§¾</div>
+      <div class="bm"><div class="bno">${b.invNo}</div><div class="bcu">${b.customer||'(à¹à¸¡à¹à¸£à¸°à¸à¸¸à¸à¸·à¹à¸­)'}</div><div class="bdt">ð ${fmtDate(b.date)}</div></div>
+      <div class="btl"><div class="bam">à¸¿${num(b.grand)}</div><div class="bct">${(b.items||[]).length} à¸£à¸²à¸¢à¸à¸²à¸£</div></div>
+    </div>`).join('');
+}
+
+function openModal(id){
+  const b=bills.find(x=>x.id===id);if(!b)return;
+  document.getElementById('modal-title').textContent=b.invNo;
+  const rows=(b.items||[]).map((it,i)=>`<tr><td style="padding:5px 0;font-size:13px;color:var(--muted)">${i+1}. ${it.name}</td><td style="padding:5px 0;font-size:13px;text-align:right">${it.qty}Ã${num(it.price)}</td><td style="padding:5px 0;font-size:13px;text-align:right;font-weight:700">à¸¿${num(iNet(it))}</td></tr>`).join('');
+  document.getElementById('modal-content').innerHTML=`
+    <div style="font-size:12px;color:var(--light);margin-bottom:9px">ð ${fmtDate(b.date)} Â· ${b.customer||'-'}</div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:11px">${rows}</table>
+    <div style="background:#fdf6e3;border-radius:8px;padding:10px;display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600;color:var(--muted)">à¸¢à¸­à¸à¸£à¸§à¸¡</span><span style="font-size:20px;font-weight:700;color:var(--gold-dk);font-family:'Cinzel',serif">à¸¿${num(b.grand)}</span></div>`;
+  document.getElementById('modal-actions').innerHTML=`
+    <button class="mb" onclick="editBill('${id}')">âï¸ à¹à¸à¹à¹à¸</button>
+    <button class="mb" onclick="dupBill('${id}')">ð à¸à¸±à¸à¸¥à¸­à¸</button>
+    <button class="mb" onclick="reprintBill('${id}')">ð¨ à¸à¸´à¸¡à¸à¹</button>
+    <button class="mb red" onclick="delBill('${id}')">ð</button>`;
+  document.getElementById('bill-modal').classList.add('open');
+}
+function closeModal(){document.getElementById('bill-modal').classList.remove('open')}
+document.getElementById('bill-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
+
+function editBill(id){
+  closeModal();const b=bills.find(x=>x.id===id);if(!b)return;
+  editId=id;document.getElementById('inv-no').value=b.invNo;document.getElementById('display-invno').textContent=b.invNo;
+  document.getElementById('inv-date').value=b.date;document.getElementById('cname').value=b.customer||'';
+  document.getElementById('caddr').value=b.address||'';document.getElementById('cphone').value=b.phone||'';
+  document.getElementById('notes').value=b.notes||'';
+  items=JSON.parse(JSON.stringify(b.items));renderItems();renderTotals();switchTab('bill');showToast('ð à¹à¸«à¸¥à¸à¸à¸´à¸¥à¸ªà¸³à¹à¸£à¹à¸');
+}
+function dupBill(id){
+  closeModal();const b=bills.find(x=>x.id===id);if(!b)return;
+  editId=null;const no=genInvNo();
+  document.getElementById('inv-no').value=no;document.getElementById('display-invno').textContent=no;
+  document.getElementById('inv-date').value=today();document.getElementById('cname').value=b.customer||'';
+  document.getElementById('caddr').value=b.address||'';document.getElementById('cphone').value=b.phone||'';
+  document.getElementById('notes').value=b.notes||'';
+  items=JSON.parse(JSON.stringify(b.items)).map(i=>({...i,id:uid()}));renderItems();renderTotals();switchTab('bill');showToast('ð à¸à¸±à¸à¸¥à¸­à¸à¸à¸´à¸¥à¸ªà¸³à¹à¸£à¹à¸');
+}
+function reprintBill(id){closeModal();const b=bills.find(x=>x.id===id);if(!b)return;buildPrint(b);setTimeout(()=>window.print(),200)}
+function delBill(id){if(!confirm('à¸¥à¸à¸à¸´à¸¥à¸à¸µà¹?'))return;closeModal();bills=bills.filter(b=>b.id!==id);saveBills();renderHistory();showToast('ð à¸¥à¸à¸à¸´à¸¥à¹à¸¥à¹à¸§')}
+
+function addProduct(){
+  const name=document.getElementById('np-name').value.trim();
+  const price=parseFloat(document.getElementById('np-price').value)||0;
+  const unit=document.getElementById('np-unit').value.trim();
+  if(!name){showToast('â ï¸ à¸à¸£à¸¸à¸à¸²à¹à¸ªà¹à¸à¸·à¹à¸­à¸ªà¸´à¸à¸à¹à¸²');return}
+  products.push({id:uid(),name,price,unit});saveProds();renderProds();
+  document.getElementById('np-name').value='';document.getElementById('np-price').value='';document.getElementById('np-unit').value='';
+  showToast('â à¹à¸à¸´à¹à¸¡à¸ªà¸´à¸à¸à¹à¸²à¸ªà¸³à¹à¸£à¹à¸È);
+}
+function delProduct(id){if(!confirm('à¸¥à¸à¸ªà¸´à¸à¸à¹à²à¸à¸µà¹?'))return;products=products.filter(p=>p.id!==id);saveProds();renderProds();showToast('ð à¸¥à¸à¸ªà¸´à¸à¸à¹à¸²à¹à¸¥à¹à¸§')}
+function renderProds(){
+  const list=document.getElementById('products-list');
+  document.getElementById('prod-count').textContent=`${products.length} à¸£à¸²à¸¢à¸à¸²à¸£h;
+  const icons=['ð¿','ðª´','â²','ð','ð¸','ð','ð','ðº','ðª¨','ð³'];
+  list.innerHTML=products.length?products.map((p,i)=>`
+    <div class="prod-item">
+      <div class="pi-icon">${icons[i%icons.length]}</div>
+      <div class="pi-info"><div class="pi-name">${p.name}</div><div class="pi-price">à¸¿${num(p.price)} / ${p.unit||'à¸«à¸à¹à¸§à¸¢'}</div></div>
+      <button class="pi-del" onclick="delProduct('${p.id}')">Ã</button>
+    </div>`).join(''):`<p style="text-align:center;color:var(--light);padding:24px 0">à¸¢à¸±à¸à¹à¸¡à¹à¸¡à¸µà¸ªà¸´à¸à¸à¹à¸²</p>`;
+}
+
+function switchTab(name){
+  ['bill','history','products'].forEach(t=>{
+    document.getElementById(`view-${t}`)?.classList.toggle('active', t===name);
+    document.getElementById(`tab-${t}`)?.classList.toggle('active', t===name);
+  });
+  if(name==='history')renderHistory();
+  if(name==='products')renderProds();
+}
+
+let drawing=false,lx=0,ly=0;
+function initSig(){
+  const cv=document.getElementById('sig-canvas');if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const r=cv.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+  cv.width=r.width*dpr;cv.height=r.height*dpr;
+  ctx.scale(dpr,dpr);ctx.strokeStyle='#1a1a1a';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';
+  function pos(e){const r=cv.getBoundingClientRect(),s=e.touches?e.touches[0]:e;return{x:s.clientX-r.left,y:s.clientY-r.top}}
+  cv.addEventListener('mousedown',e=>{e.preventDefault();drawing=true;const p=pos(e);lx=p.x;ly=p.y;ctx.beginPath();ctx.moveTo(p.x,p.y)},{passive:false});
+  cv.addEventListener('mousemove',e=>{if(!drawing)return;const p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y},{passive:false});
+  cv.addEventListener('mouseup',()=>drawing=false);
+  cv.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;const p=pos(e);lx=p.x;ly=p.y;ctx.beginPath();ctx.moveTo(p.x,p.y)},{passive:false});
+  cv.addEventListener('touchmove',e=>{if(!drawing)return;e.preventDefault();const p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y},{passive:false});
+  cv.addEventListener('touchend',()=>drawing=false);
+}
+function clearSig(){const cv=document.getElementById('sig-canvas');if(!cv)return;cv.getContext('2d').clearRect(0,0,cv.width,cv.height)}
+function getSigURL(){
+  const cv=document.getElementById('sig-canvas');if(!cv)return'';
+  const d=cv.getContext('2d').getImageData(0,0,cv.width,cv.height).data;
+  return d.some((v,i)=>i%4===3&&v>0)?cv.toDataURL('image/png'):'';
+}
+function downloadSig(){const url=getSigURL();if(!url){showToast('â ï¸ à¸¢à¸±à¸à¹à¸¡à¹à¸¡à¸µà¸¥à¸²à¸¢à¹à¸à¹à¸');return}const a=document.createElement('a');a.href=url;a.download='signature.png';a.click()}
+
+let tt;
+function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2500)}
+
+window.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>

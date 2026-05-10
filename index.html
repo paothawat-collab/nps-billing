@@ -87,11 +87,6 @@ button{cursor:pointer;border:none;outline:none;background:none}
 .tv{font-weight:700;font-family:'Cinzel',serif;font-size:16px}
 .tv.red{color:var(--danger)}
 
-/* ── Signature ── */
-.sig-canvas{width:100%;height:110px;border:1px solid var(--border);border-radius:var(--rs);background:var(--input);touch-action:none;display:block;cursor:crosshair}
-.sig-row{display:flex;gap:7px;margin-top:7px}
-.sig-btn{flex:1;padding:9px;font-size:12px;font-weight:600;border-radius:var(--rs);border:1px solid var(--border);background:var(--input);color:var(--muted)}
-
 /* ── Action Buttons ── */
 .action-bar{display:flex;flex-direction:column;gap:9px;margin-top:4px}
 .btn-p{padding:15px;font-size:15px;font-weight:700;background:linear-gradient(135deg,var(--gold-dk),var(--gold));color:#fff;border-radius:var(--r);box-shadow:0 4px 14px rgba(200,169,81,.35);display:flex;align-items:center;justify-content:center;gap:8px}
@@ -150,9 +145,18 @@ button{cursor:pointer;border:none;outline:none;background:none}
 @media print {
   @page { size: A4; margin: 12mm 14mm; }
 
+  /* แก้ไขบัคหน้ากระดาษเปล่าหน้าที่ 2 */
+  html, body { 
+    height: auto !important; 
+    min-height: auto !important; 
+    margin: 0 !important; 
+    padding: 0 !important; 
+    background: #fff;
+  }
+
   body > *:not(#print-wrap) { display: none !important; }
-  #print-wrap { display: block !important; }
-  body { background:#fff; padding:0; font-family:'Sarabun',sans-serif; font-size:11pt; color:#000; }
+  #print-wrap { display: block !important; margin: 0; padding: 0; }
+  body { font-family:'Sarabun',sans-serif; font-size:11pt; color:#000; }
 
   /* Header */
   .ph { display:flex; align-items:flex-start; gap:14pt; margin-bottom:10pt; }
@@ -311,16 +315,6 @@ button{cursor:pointer;border:none;outline:none;background:none}
 -ชำระค่าสินค้าทั้งหมดหรือมัดจำ70%เพื่อลงคิวผลิต</textarea></div>
   </div>
 
-  <div class="card">
-    <div class="card-header"><span class="card-title">✍️ ลายเซ็นลูกค้า (ถ้ามี)</span></div>
-    <span style="font-size:11px;color:var(--light);display:block;margin-bottom:6px">วาดลายเซ็นด้วยนิ้วในช่องด้านล่าง (ส่วนลายเซ็นผู้ขายจะเติมให้อัตโนมัติในใบเสร็จ)</span>
-    <canvas class="sig-canvas" id="sig-canvas" width="600" height="110"></canvas>
-    <div class="sig-row">
-      <button class="sig-btn" onclick="clearSig()">🗑️ ล้างลายเซ็น</button>
-      <button class="sig-btn" onclick="downloadSig()">💾 บันทึกภาพ</button>
-    </div>
-  </div>
-
   <div class="action-bar">
     <button class="btn-p" onclick="printBill()">🖨️ ออกใบเสร็จ / พิมพ์ PDF</button>
     <button class="btn-s" onclick="saveBill()">💾 บันทึกบิลนี้</button>
@@ -400,7 +394,7 @@ function num(n){return Number(n||0).toLocaleString('th-TH',{minimumFractionDigit
 function iNet(it){return Math.max(0,(it.qty*it.price)-it.discount)}
 
 /* ─── Init ─── */
-function init(){newBill();initSig();renderProds();renderHistory()}
+function init(){newBill();renderProds();renderHistory()}
 function newBill(){
   editId=null;items=[];
   const no=genInvNo();
@@ -411,7 +405,7 @@ function newBill(){
   document.getElementById('notes').value=`-ราคาดังกล่าวไม่รวมค่าติดตั้งทุกรายการ
 -ราคาดังกล่าวรวมค่าส่งเรียบร้อยแล้ว
 -ชำระค่าสินค้าทั้งหมดหรือมัดจำ70%เพื่อลงคิวผลิต`;
-  clearSig();addItem();renderTotals();
+  addItem();renderTotals();
 }
 
 /* ─── Items ─── */
@@ -476,7 +470,7 @@ function collectBill(){
     customer:document.getElementById('cname').value,address:document.getElementById('caddr').value,
     phone:document.getElementById('cphone').value,notes:document.getElementById('notes').value,
     items:JSON.parse(JSON.stringify(items)),subtotal:sub,discount:disc,grand:Math.max(0,sub-disc),
-    sig:getSigURL(),savedAt:new Date().toISOString()};
+    savedAt:new Date().toISOString()};
 }
 
 /* ─── Save ─── */
@@ -492,7 +486,10 @@ function printBill(){const bill=collectBill();buildPrint(bill);setTimeout(()=>wi
 
 function buildPrint(bill){
   const wrap=document.getElementById('print-wrap');
-  const MIN=8;
+  
+  // ลดบรรทัดว่างขั้นต่ำลงจาก 8 เหลือ 5 เพื่อกันไม่ให้ล้นไปหน้าที่ 2 โดยไม่จำเป็น
+  const MIN=5; 
+  
   let rows='';
   bill.items.forEach((it,i)=>{
     rows+=`<tr>
@@ -508,9 +505,6 @@ function buildPrint(bill){
   for(let i=0;i<empty;i++) rows+=`<tr class="erow"><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
   const noteHtml=(bill.notes||'').split('\n').map(l=>`<div>${escHtml(l)}</div>`).join('');
   
-  /* ลายเซ็นลูกค้า (วาดบนจอ) */
-  const customerSig = bill.sig ? `<img src="${bill.sig}">` : '';
-
   const dateStr=fmtThai(bill.date);
   wrap.innerHTML=`
   <div class="ph">
@@ -563,7 +557,7 @@ function buildPrint(bill){
       </div>
       <div class="psig">
         <div class="psig-title">ผู้สั่งซื้อ</div>
-        <div class="psig-body">${customerSig}</div>
+        <div class="psig-body"></div>
         <div class="psig-line">ลายเซ็น / Signature</div>
       </div>
     </div>
@@ -653,29 +647,6 @@ function switchTab(name){
   if(name==='history')renderHistory();
   if(name==='products')renderProds();
 }
-
-let drawing=false,lx=0,ly=0;
-function initSig(){
-  const cv=document.getElementById('sig-canvas');if(!cv)return;
-  const ctx=cv.getContext('2d');
-  const r=cv.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
-  cv.width=r.width*dpr;cv.height=r.height*dpr;
-  ctx.scale(dpr,dpr);ctx.strokeStyle='#1a1a1a';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';
-  function pos(e){const r=cv.getBoundingClientRect(),s=e.touches?e.touches[0]:e;return{x:s.clientX-r.left,y:s.clientY-r.top}}
-  cv.addEventListener('mousedown',e=>{e.preventDefault();drawing=true;const p=pos(e);lx=p.x;ly=p.y;ctx.beginPath();ctx.moveTo(p.x,p.y)},{passive:false});
-  cv.addEventListener('mousemove',e=>{if(!drawing)return;const p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y},{passive:false});
-  cv.addEventListener('mouseup',()=>drawing=false);
-  cv.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;const p=pos(e);lx=p.x;ly=p.y;ctx.beginPath();ctx.moveTo(p.x,p.y)},{passive:false});
-  cv.addEventListener('touchmove',e=>{if(!drawing)return;e.preventDefault();const p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y},{passive:false});
-  cv.addEventListener('touchend',()=>drawing=false);
-}
-function clearSig(){const cv=document.getElementById('sig-canvas');if(!cv)return;cv.getContext('2d').clearRect(0,0,cv.width,cv.height)}
-function getSigURL(){
-  const cv=document.getElementById('sig-canvas');if(!cv)return'';
-  const d=cv.getContext('2d').getImageData(0,0,cv.width,cv.height).data;
-  return d.some((v,i)=>i%4===3&&v>0)?cv.toDataURL('image/png'):'';
-}
-function downloadSig(){const url=getSigURL();if(!url){showToast('⚠️ ยังไม่มีลายเซ็น');return}const a=document.createElement('a');a.href=url;a.download='signature.png';a.click()}
 
 let tt;
 function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2500)}
